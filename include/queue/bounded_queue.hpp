@@ -4,6 +4,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
+#include "queue/bounded_queue.hpp"
 
 namespace dispatcher::queue {
 
