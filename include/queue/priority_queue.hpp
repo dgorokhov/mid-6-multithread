@@ -4,6 +4,7 @@
 #include "types.hpp"
 
 #include <atomic>
+#include <condition_variable>
 #include <limits>
 #include <map>
 #include <memory>
@@ -15,13 +16,22 @@
 namespace dispatcher::queue {
 
 class PriorityQueue {
-    // здесь ваш код
+private:
+    // std::greater гарантирует, что при обходе map первыми будут элементы с бóльшим enum (High -> Normal)
+    std::map<TaskPriority, std::unique_ptr<IQueue>, std::greater<TaskPriority>> queues_;
+
+    mutable std::mutex mutex_;
+    std::condition_variable cv_pop_;  // Для блокировки потоков в методе pop()
+    std::atomic<bool> is_shutdown_{false};
+
 public:
-    // explicit PriorityQueue(?);
+    // Конструктор принимает конфигурацию соответствия приоритета и настроек очереди
+    explicit PriorityQueue(const std::map<TaskPriority, QueueOptions> &config);
 
     void push(TaskPriority priority, std::function<void()> task);
-    // block on pop until shutdown is called
-    // after that return std::nullopt on empty queue
+
+    // Блокирует поток на pop(), пока не появится задача или не будет вызван shutdown.
+    // После shutdown возвращает оставшиеся задачи, а когда они закончатся — std::nullopt.
     std::optional<std::function<void()>> pop();
 
     void shutdown();
