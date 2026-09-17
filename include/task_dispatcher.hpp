@@ -15,8 +15,6 @@ private:
     std::unique_ptr<thread_pool::ThreadPool> pool_;
 
 public:
-    // Исправлено: добавлены полные пути к пространству имен queue::QueueOptions
-    // и учтено, что capacity — это std::optional<int>
     explicit TaskDispatcher(
         size_t thread_count,
         const std::map<TaskPriority, queue::QueueOptions>& config = {

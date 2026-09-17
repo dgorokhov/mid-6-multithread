@@ -12,3 +12,20 @@ target_link_libraries(task_dispatcher
 )
 
 target_include_directories(task_dispatcher PUBLIC ${CMAKE_SOURCE_DIR}/include)
+
+# --- ПЕРЕНЕСЕНО СЮДА ---
+# Создаем исполняемый файл из main.cpp, который теперь лежит рядом
+set(target dispatcher)
+
+add_executable(${target} main.cpp)
+
+# Подключаем заголовочные файлы
+target_include_directories(${target} PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+)
+
+# Линкуем библиотеку к исполняемому файлу
+target_link_libraries(${target} 
+    PRIVATE
+        task_dispatcher
+)

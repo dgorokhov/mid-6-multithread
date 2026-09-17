@@ -10,7 +10,7 @@ void BoundedQueue::push(std::function<void()> task) {
     
     // Ждем, пока в очереди появится место ИЛИ пока не начнется выключение
     cv_push_.wait(lock, [this]() { 
-        return queue_.size() < static_cast<size_t>(capacity_) || is_shutdown_.load(std::memory_order_acquire); 
+        return queue_.size() <static_cast<size_t>(capacity_) || is_shutdown_.load(std::memory_order_acquire); 
     });
 
     // Если система завершает работу, новые задачи не добавляем

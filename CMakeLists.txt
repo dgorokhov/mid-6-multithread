@@ -16,18 +16,3 @@ enable_testing()
 add_subdirectory(src)
 add_subdirectory(tests)
 
-# Раскомментировано и исправлено для сборки исполняемого файла dispatcher
-set(target dispatcher)
-
-add_executable(${target} main.cpp)
-
-# Подключаем заголовочные файлы к исполняемому файлу
-target_include_directories(${target} PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-
-# Линкуем наш диспетчер задач к исполняемому файлу
-target_link_libraries(${target} 
-    PRIVATE
-        task_dispatcher
-)

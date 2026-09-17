@@ -2,8 +2,8 @@
 
 namespace dispatcher {
 
-// Исправлено: добавлен префикс queue:: перед QueueOptions
-TaskDispatcher::TaskDispatcher(size_t thread_count, const std::map<TaskPriority, queue::QueueOptions>& config)
+TaskDispatcher::TaskDispatcher(size_t thread_count, 
+    const std::map<TaskPriority, queue::QueueOptions>& config)
     : queue_(std::make_shared<queue::PriorityQueue>(config))
     , pool_(std::make_unique<thread_pool::ThreadPool>(queue_, thread_count)) {}
 

@@ -27,23 +27,22 @@ void PriorityQueue::push(TaskPriority priority, std::function<void()> task) {
     }
 }
 
+
 std::optional<std::function<void()>> PriorityQueue::pop() {
     std::unique_lock<std::mutex> lock(mutex_);
 
     while (true) {
-        // Проверяем очереди в порядке убывания приоритета (High -> Normal)
+        // Проверяем очереди строго по приоритетам (High идет первым из-за std::greater)
         for (auto& [priority, queue] : queues_) {
             if (auto task_opt = queue->try_pop()) {
-                return task_opt;
+                return task_opt; // Нашли задачу — сразу возвращаем её
             }
         }
 
-        // Если все очереди пусты и вызван shutdown, завершаем работу
         if (is_shutdown_.load(std::memory_order_acquire)) {
             return std::nullopt;
         }
 
-        // Если задач нет и shutdown не вызывался, засыпаем
         cv_pop_.wait(lock);
     }
 }
