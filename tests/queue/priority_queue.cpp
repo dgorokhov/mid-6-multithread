@@ -12,30 +12,25 @@ TEST(PriorityQueueTest, HighPriorityFirst) {
     };
     PriorityQueue pq(config);
     std::vector<int> execution_order;
-
-    // Шаг 1: Добавляем задачу с НОРМАЛЬНЫМ приоритетом
     pq.push(TaskPriority::Normal, [&execution_order]() { execution_order.push_back(0); });
-    
     pq.push(TaskPriority::High, [&execution_order]() { execution_order.push_back(1); });
 
-    // Шаг 3: Извлекаем первую задачу. Благодаря правильной сортировке map,
-    // метод pop() обязан проигнорировать Normal и вернуть High.
+    // Извлекаем 1ю задачу
+    // pop() обязан вернуть High.
     auto t1 = pq.pop();
     ASSERT_TRUE(t1.has_value());
-    t1.value()(); // Выполнит добавление '1'
-
+    t1.value()(); 
     // Шаг 4: Извлекаем вторую задачу (оставшийся Normal)
     auto t2 = pq.pop();
     ASSERT_TRUE(t2.has_value());
-    t2.value()(); // Выполнит добавление '0'
+    t2.value()(); 
 
-    // Проверяем порядок выполнения
     ASSERT_EQ(execution_order.size(), 2);
     EXPECT_EQ(execution_order[0], 1); // Первым выполнился High
     EXPECT_EQ(execution_order[1], 0); // Вторым выполнился Normal
 }
 
-// Тест 5: Работа pop() и сохранение остатков после shutdown()
+// Работа pop() и сохранение остатков после shutdown()
 TEST(PriorityQueueTest, DrainAfterShutdown) {
     std::map<TaskPriority, QueueOptions> config = {
         {TaskPriority::Normal, QueueOptions{false, std::nullopt}}

@@ -5,7 +5,7 @@
 
 namespace dispatcher::queue::tests {
 
-// Тест 3: Проверка порядка FIFO в неограниченной очереди
+//Проверка порядка FIFO в неограниченной очереди
 TEST(UnboundedQueueTest, FifoOrder) {
     UnboundedQueue q;
     std::vector<int> results;
@@ -22,7 +22,6 @@ TEST(UnboundedQueueTest, FifoOrder) {
         task_opt.value()();
     }
 
-    // Порядок должен быть строго сохранен: 1, 2, 3
     ASSERT_EQ(results.size(), 3);
     EXPECT_EQ(results[0], 1);
     EXPECT_EQ(results[1], 2);

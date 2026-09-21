@@ -11,8 +11,8 @@ ThreadPool::ThreadPool(std::shared_ptr<queue::PriorityQueue> queue, size_t threa
 }
 
 ThreadPool::~ThreadPool() {
-    // Согласно ТЗ, после вызова деструктора потоки исполняют задачи,
-    // пока из приоритетной очереди не вернётся std::nullopt.
+    // после вызова деструктора потоки исполняют задачи,
+    // пока из очереди не вернётся std::nullopt.
     for (auto &worker : workers_) {
         if (worker.joinable()) {
             worker.join();
@@ -27,7 +27,7 @@ void ThreadPool::worker_routine() {
             break;  // Очередь закрыта и пуста, поток завершает работу
         }
 
-        // Выполнение задачи с перехватом исключений (требование ТЗ)
+        // Выполнение с перехватом исключенй 
         try {
             if (task_opt.value()) {
                 task_opt.value()();

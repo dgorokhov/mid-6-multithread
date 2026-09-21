@@ -38,19 +38,16 @@ std::optional<std::function<void()>> PriorityQueue::pop() {
                 return task_opt; // Нашли задачу — сразу возвращаем её
             }
         }
-
         if (is_shutdown_.load(std::memory_order_acquire)) {
             return std::nullopt;
         }
-
         cv_pop_.wait(lock);
     }
 }
 
 void PriorityQueue::shutdown() {
     is_shutdown_.store(true, std::memory_order_release);
-    // Исправлено: убрали вызов queue->shutdown(), так как его нет в IQueue.
-    // Потоки в pop() проснутся от notify_all и увидят флаг is_shutdown_.
+    // Потоки в pop() проснутся т notify_allи увидят is_shutdown_.
     cv_pop_.notify_all();
 }
 
@@ -58,4 +55,4 @@ PriorityQueue::~PriorityQueue() {
     shutdown();
 }
 
-}  // namespace dispatcher::queue
+}  

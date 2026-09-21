@@ -13,7 +13,7 @@ private:
     std::atomic<bool> is_shutdown_{false};
 
 public:
-    // Исправлено: конструктор теперь без параметров
+   
     UnboundedQueue() = default;
 
     void push(std::function<void()> task) override;

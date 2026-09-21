@@ -17,7 +17,7 @@ TEST(BoundedQueueTest, BasicPushPop) {
     EXPECT_TRUE(executed.load(std::memory_order_acquire));
 }
 
-TEST(BoundedQueueTest, PopFromEmptyQueue) {
+TEST(BoundedQueueTest, PopEmptyQueue) {
     BoundedQueue q(5);
     auto task_opt = q.try_pop();
     EXPECT_FALSE(task_opt.has_value()); // Должен вернуть std::nullopt

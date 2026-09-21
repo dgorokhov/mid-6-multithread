@@ -17,7 +17,7 @@ namespace dispatcher::queue {
 
 class PriorityQueue {
 private:
-    // std::greater гарантирует, что при обходе map первыми будут элементы с бóльшим enum (High -> Normal)
+    
     std::map<TaskPriority, std::unique_ptr<IQueue>, std::greater<TaskPriority>> queues_;
 
     mutable std::mutex mutex_;
@@ -30,8 +30,8 @@ public:
 
     void push(TaskPriority priority, std::function<void()> task);
 
-    // Блокирует поток на pop(), пока не появится задача или не будет вызван shutdown.
-    // После shutdown возвращает оставшиеся задачи, а когда они закончатся — std::nullopt.
+    // локирует поток на pop, пока не будет задача\до вызова shutdown.
+    // После shutdown возвращает оставшиеся задачи, когда они закончатся -nullopt.
     std::optional<std::function<void()>> pop();
 
     void shutdown();

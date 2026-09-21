@@ -15,10 +15,7 @@ private:
     void worker_routine();
 
 public:
-    // Конструктор принимает shared_ptr на приоритетную очередь и количество потоков в пуле
     ThreadPool(std::shared_ptr<queue::PriorityQueue> queue, size_t threads_count);
-
-    // Деструктор, дожидающийся выполнения оставшихся задач
     ~ThreadPool();
 
     // Запрещаем копирование и присваивание для безопасности работы с потоками
