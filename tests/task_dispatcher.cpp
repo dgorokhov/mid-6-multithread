@@ -44,24 +44,28 @@ TEST(TaskDispatcherTest, ExecAllBeforeDestruct) {
 
 // Тест 8: Стресс-тест на отсутствие гонок данных при высокой конкуренции
 TEST(TaskDispatcherTest, MThreadedStressTest) {
-    TaskDispatcher dispatcher(4);
+
     std::atomic<int> total_sum{0};
+    {
+        TaskDispatcher dispatcher(4);
 
-    auto producer = [&dispatcher, &total_sum]() {
-        for (int i = 0; i < 50; ++i) {
-            dispatcher.schedule(TaskPriority::Normal, [&total_sum]() {
-                total_sum.fetch_add(1, std::memory_order_relaxed);
-            });
-        }
-    };
+        auto producer = [&dispatcher, &total_sum]() {
+            for (int i = 0; i < 50; ++i) {
+                dispatcher.schedule(TaskPriority::Normal, [&total_sum]() {
+                    total_sum.fetch_add(1, std::memory_order_relaxed);
+                });
+            }
+        };
 
-    std::thread t1(producer);
-    std::thread t2(producer);
-    t1.join();
-    t2.join();
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-   
-    // В деструкторе диспетчер точно всё доделает
+        // Запускаем параллельные потоки-генераторы
+        std::thread t1(producer);
+        std::thread t2(producer);
+        t1.join();
+        t2.join();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        
+    }
+    // 2 потока х 50 задач = 100
+    EXPECT_EQ(total_sum.load(std::memory_order_acquire), 100);
 }
-
 }  // namespace dispatcher::tests

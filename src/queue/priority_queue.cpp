@@ -29,6 +29,7 @@ void PriorityQueue::push(TaskPriority priority, std::function<void()> task) {
 
 
 std::optional<std::function<void()>> PriorityQueue::pop() {
+   
     std::unique_lock<std::mutex> lock(mutex_);
 
     while (true) {
@@ -46,8 +47,9 @@ std::optional<std::function<void()>> PriorityQueue::pop() {
 }
 
 void PriorityQueue::shutdown() {
+    //amend
+    std::lock_guard<std::mutex> lock(mutex_);
     is_shutdown_.store(true, std::memory_order_release);
-    // Потоки в pop() проснутся т notify_allи увидят is_shutdown_.
     cv_pop_.notify_all();
 }
 
