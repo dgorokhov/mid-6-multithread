@@ -22,15 +22,19 @@ void BoundedQueue::push(std::function<void()> task) {
 }
 
 std::optional<std::function<void()>> BoundedQueue::try_pop() {
-    std::lock_guard<std::mutex> lock(mutex_);
+    //amend_1
+    std::function<void()> task;
+    { 
+        std::lock_guard<std::mutex> lock(mutex_);
     
-    if (queue_.empty()) {
-        return std::nullopt;
+        if (queue_.empty()) {
+            return std::nullopt;
+        }
+
+        task = std::move(queue_.front());
+        queue_.pop();
     }
-
-    auto task = std::move(queue_.front());
-    queue_.pop();
-
+    
     // Освободилось место — будим один из потоков, застрявших в push
     cv_push_.notify_one();
     
@@ -38,7 +42,11 @@ std::optional<std::function<void()>> BoundedQueue::try_pop() {
 }
 
 BoundedQueue::~BoundedQueue() {
-    is_shutdown_.store(true, std::memory_order_release);
+    //amend_2
+    { 
+        std::lock_guard<std::mutex> lock(mutex_);
+        is_shutdown_.store(true, std::memory_order_release);
+    }
     // Разблокируем все потоки, которые могли ожидать в push
     cv_push_.notify_all();
 }
